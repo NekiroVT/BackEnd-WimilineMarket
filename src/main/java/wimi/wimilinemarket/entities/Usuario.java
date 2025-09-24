@@ -41,5 +41,7 @@ public class Usuario {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    //@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    //    private List<Direccion> direcciones;
 
 }

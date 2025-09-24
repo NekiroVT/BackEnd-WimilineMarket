@@ -1,11 +1,12 @@
+// PedidoRepository.java
 package wimi.wimilinemarket.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import wimi.wimilinemarket.entities.Categoria;
+import wimi.wimilinemarket.entities.Pedido;
 
 import java.util.UUID;
 
 @Repository
-public interface CategoriaRepository extends JpaRepository<Categoria, UUID> {
+public interface PedidoRepository extends JpaRepository<Pedido, UUID> {
 }

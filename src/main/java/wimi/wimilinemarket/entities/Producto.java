@@ -21,15 +21,15 @@ public class Producto {
     @Column(name = "producto_id", columnDefinition = "RAW(16)")
     private UUID productoId;
 
-    // FK → Categoria.categoria_id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id")
+    // FK → Categoria.categoria_id (OBLIGATORIA)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "categoria_id", nullable = false, columnDefinition = "RAW(16)")
     private Categoria categoria;
 
     @Column(length = 150)
     private String nombre;
 
-    @Lob // para TEXT
+    @Lob
     private String descripcion;
 
     @Column(length = 150)

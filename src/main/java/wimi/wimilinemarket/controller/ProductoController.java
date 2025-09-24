@@ -59,4 +59,11 @@ public class ProductoController {
         productoService.deleteProducto(productoId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    // Obtener productos nuevos (últimas 24 horas)
+    @GetMapping("/nuevos")
+    public ResponseEntity<List<ProductoDTO>> getProductosNuevos() {
+        List<ProductoDTO> productosNuevos = productoService.findProductosNuevos();
+        return ResponseEntity.ok(productosNuevos);
+    }
 }

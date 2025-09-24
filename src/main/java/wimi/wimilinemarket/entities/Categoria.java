@@ -36,4 +36,8 @@ public class Categoria {
     // Relación con productos (opcional)
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Producto> productos;
+
+    // Imagen de la categoría
+    @Column(name = "imagen_url", length = 255)
+    private String imagenUrl; // URL o path de la imagen de la categoría
 }

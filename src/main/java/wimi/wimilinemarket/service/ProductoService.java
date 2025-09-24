@@ -3,6 +3,7 @@ package wimi.wimilinemarket.service;
 import wimi.wimilinemarket.dto.ProductoDTO;
 import wimi.wimilinemarket.entities.Producto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,4 +27,7 @@ public interface ProductoService {
 
     // Eliminar un producto
     void deleteProducto(UUID productoId);
+
+    // Obtener productos nuevos (creados dentro de un intervalo de tiempo, por ejemplo, últimas 24 horas)
+    List<ProductoDTO> findProductosNuevos();
 }

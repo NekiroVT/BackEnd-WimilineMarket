@@ -32,4 +32,6 @@ public class Direccion {
 
     @Column(length = 100)
     private String ciudad;
+
+
 }
