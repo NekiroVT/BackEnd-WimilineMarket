@@ -25,6 +25,7 @@ public class DireccionController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    // Método para crear una nueva dirección
     @PostMapping
     public ResponseEntity<DireccionDTO> crearDireccion(@RequestBody DireccionDTO direccionDTO, HttpServletRequest request) {
         // Obtener el token del header Authorization
@@ -56,6 +57,7 @@ public class DireccionController {
         return ResponseEntity.ok(nuevaDireccion);
     }
 
+    // Método para obtener una dirección por su ID
     @GetMapping("/{id}")
     public ResponseEntity<DireccionDTO> obtenerDireccionPorId(@PathVariable UUID id, HttpServletRequest request) {
         // Obtener el token del header Authorization
@@ -89,6 +91,7 @@ public class DireccionController {
         return ResponseEntity.notFound().build(); // Dirección no encontrada
     }
 
+    // Método para obtener direcciones de un usuario
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<DireccionDTO>> obtenerDireccionesPorUsuario(@PathVariable UUID usuarioId, HttpServletRequest request) {
         // Obtener el token del header Authorization
@@ -118,7 +121,7 @@ public class DireccionController {
         return ResponseEntity.ok(direcciones);
     }
 
-
+    // Método para actualizar una dirección
     @PutMapping("/{id}")
     public ResponseEntity<DireccionDTO> actualizarDireccion(@PathVariable UUID id, @RequestBody DireccionDTO direccionDTO, HttpServletRequest request) {
         // Obtener el token del header Authorization
@@ -155,7 +158,7 @@ public class DireccionController {
         return ResponseEntity.notFound().build(); // Dirección no encontrada
     }
 
-
+    // Método para eliminar una dirección
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarDireccion(@PathVariable UUID id, HttpServletRequest request) {
         // Obtener el token del header Authorization
@@ -190,5 +193,4 @@ public class DireccionController {
 
         return ResponseEntity.notFound().build(); // Dirección no encontrada
     }
-
 }

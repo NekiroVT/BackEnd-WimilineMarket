@@ -1,13 +1,8 @@
 package wimi.wimilinemarket.service.impl;
 
-import wimi.wimilinemarket.dto.CarritoItemDTO;
 import wimi.wimilinemarket.entities.Carrito;
 import wimi.wimilinemarket.entities.CarritoItem;
-import wimi.wimilinemarket.entities.Producto;
-import wimi.wimilinemarket.entities.Usuario;
-import wimi.wimilinemarket.repository.CarritoItemRepository;
 import wimi.wimilinemarket.repository.CarritoRepository;
-import wimi.wimilinemarket.repository.ProductoRepository;
 import wimi.wimilinemarket.service.CarritoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,95 +14,32 @@ import java.util.UUID;
 public class CarritoServiceImpl implements CarritoService {
 
     private final CarritoRepository carritoRepository;
-    private final CarritoItemRepository carritoItemRepository;
-    private final ProductoRepository productoRepository;
 
     @Autowired
-    public CarritoServiceImpl(CarritoRepository carritoRepository, CarritoItemRepository carritoItemRepository, ProductoRepository productoRepository) {
+    public CarritoServiceImpl(CarritoRepository carritoRepository) {
         this.carritoRepository = carritoRepository;
-        this.carritoItemRepository = carritoItemRepository;
-        this.productoRepository = productoRepository;
     }
 
     @Override
     public Carrito obtenerCarritoPorUsuario(UUID usuarioId) {
-        // Verificar si el carrito existe para el usuario
         return carritoRepository.findByUsuario_UsuarioIdAndEstadoTrue(usuarioId);
     }
 
     @Override
-    public CarritoItemDTO agregarProductoAlCarrito(UUID usuarioId, UUID productoId, int cantidad) {
-        // Obtener el producto y validar
-        Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    public void recalcularTotalesCarrito(UUID carritoId) {
+        Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
 
-        // Obtener el carrito del usuario
-        Carrito carrito = carritoRepository.findByUsuario_UsuarioIdAndEstadoTrue(usuarioId);
-        if (carrito == null) {
-            carrito = new Carrito();
-            carrito.setUsuario(new Usuario(usuarioId)); // Asociamos el carrito al usuario
-            carrito.setEstado(true);  // Estado activo por defecto
-            carritoRepository.save(carrito);  // Guardar el carrito
-        }
-
-        // Verificar si el producto ya existe en el carrito
-        CarritoItem carritoItem = carritoItemRepository.findByCarrito_Usuario_UsuarioIdAndProducto_ProductoId(usuarioId, productoId);
-
-        if (carritoItem == null) {
-            // Si el producto no está en el carrito, agregarlo
-            carritoItem = new CarritoItem();
-            carritoItem.setCarrito(carrito);
-            carritoItem.setProducto(producto);
-            carritoItem.setCantidad(cantidad);
-            carritoItem.setPrecioUnitario(producto.getPrecio());
-            carritoItem.setEstado(true); // El item está activo
-            carritoItemRepository.save(carritoItem);
-        } else {
-            // Si el producto ya está en el carrito, solo actualizar la cantidad
-            carritoItem.setCantidad(carritoItem.getCantidad() + cantidad);
-            carritoItemRepository.save(carritoItem);
-        }
-
-        // Recalcular totales del carrito después de agregar el item
-        recalcularTotalesCarrito(carrito);
-
-        // Mapear el item agregado a DTO
-        CarritoItemDTO carritoItemDTO = new CarritoItemDTO();
-        carritoItemDTO.setCarritoItemId(carritoItem.getCarritoItemId());
-        carritoItemDTO.setCarritoId(carrito.getCarritoId());
-        carritoItemDTO.setProductoId(productoId);
-        carritoItemDTO.setCantidad(carritoItem.getCantidad());
-        carritoItemDTO.setPrecioUnitario(producto.getPrecio());
-        carritoItemDTO.setEstado(carritoItem.getEstado());
-
-        return carritoItemDTO;  // Devolver el DTO
-    }
-
-    @Override
-    public void eliminarProductoDelCarrito(UUID usuarioId, UUID productoId) {
-        // Buscar el carrito item asociado al usuario y el producto
-        CarritoItem carritoItem = carritoItemRepository.findByCarrito_Usuario_UsuarioIdAndProducto_ProductoId(usuarioId, productoId);
-        if (carritoItem != null) {
-            // Eliminar el item del carrito
-            carritoItemRepository.delete(carritoItem);
-
-            // Recalcular totales del carrito después de eliminar el item
-            Carrito carrito = carritoItem.getCarrito();
-            recalcularTotalesCarrito(carrito);  // Recalcular totales
-        }
-    }
-
-    private void recalcularTotalesCarrito(Carrito carrito) {
         BigDecimal precioTotal = BigDecimal.ZERO;
         int cantidadTotal = 0;
 
-        // Obtener todos los items del carrito
-        for (CarritoItem item : carritoItemRepository.findByCarrito_CarritoId(carrito.getCarritoId())) {
-            precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
-            cantidadTotal += item.getCantidad();
+        for (CarritoItem item : carrito.getCarritoItems()) {
+            if (item.getEstado()) { // Solo contar los items activos
+                precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
+                cantidadTotal += item.getCantidad();
+            }
         }
 
-        // Actualizar los totales del carrito
         carrito.actualizarTotales(precioTotal, cantidadTotal);
-        carritoRepository.save(carrito); // Guardamos después de actualizar totales
+        carritoRepository.save(carrito);
     }
 }

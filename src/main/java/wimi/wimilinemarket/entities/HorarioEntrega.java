@@ -10,18 +10,18 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Entrega")
+@Table(name = "horario_entrega")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Entrega {
+public class HorarioEntrega {
 
     @Id
     @Column(name = "entrega_id", columnDefinition = "RAW(16)")
     private UUID entregaId;
 
-    @Column(name = "fecha_programada")
-    private LocalDateTime fechaProgramada;
+    @Column(name = "hora_programada")
+    private LocalDateTime horaProgramada;
 
     @Column(name = "fecha_entrega")
     private LocalDateTime fechaEntrega;

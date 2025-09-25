@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -39,14 +40,18 @@ public class Carrito {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // Relación uno a muchos con CarritoItem
+    @OneToMany(mappedBy = "carrito", fetch = FetchType.LAZY)
+    private List<CarritoItem> carritoItems; // Lista de productos en el carrito
+
     // Este método solo actualiza el precio y la cantidad
     public void actualizarTotales(BigDecimal precioTotal, int cantidadTotal) {
         this.totalPrecio = precioTotal;
         this.totalCantidad = cantidadTotal;
     }
 
-
-
-
-
+    // Método getter para obtener los CarritoItems (productos en el carrito)
+    public List<CarritoItem> getCarritoItems() {
+        return carritoItems;
+    }
 }
