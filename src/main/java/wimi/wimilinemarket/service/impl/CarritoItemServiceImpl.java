@@ -8,7 +8,7 @@ import wimi.wimilinemarket.entities.Usuario;
 import wimi.wimilinemarket.repository.CarritoItemRepository;
 import wimi.wimilinemarket.repository.CarritoRepository;
 import wimi.wimilinemarket.repository.ProductoRepository;
-import wimi.wimilinemarket.service.CarritoService;
+import wimi.wimilinemarket.service.CarritoItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,28 +16,22 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
-public class CarritoServiceImpl implements CarritoService {
+public class CarritoItemServiceImpl implements CarritoItemService {
 
-    private final CarritoRepository carritoRepository;
     private final CarritoItemRepository carritoItemRepository;
+    private final CarritoRepository carritoRepository;
     private final ProductoRepository productoRepository;
 
     @Autowired
-    public CarritoServiceImpl(CarritoRepository carritoRepository, CarritoItemRepository carritoItemRepository, ProductoRepository productoRepository) {
-        this.carritoRepository = carritoRepository;
+    public CarritoItemServiceImpl(CarritoItemRepository carritoItemRepository, CarritoRepository carritoRepository, ProductoRepository productoRepository) {
         this.carritoItemRepository = carritoItemRepository;
+        this.carritoRepository = carritoRepository;
         this.productoRepository = productoRepository;
     }
 
     @Override
-    public Carrito obtenerCarritoPorUsuario(UUID usuarioId) {
-        // Verificar si el carrito existe para el usuario
-        return carritoRepository.findByUsuario_UsuarioIdAndEstadoTrue(usuarioId);
-    }
-
-    @Override
     public CarritoItemDTO agregarProductoAlCarrito(UUID usuarioId, UUID productoId, int cantidad) {
-        // Obtener el producto y validar
+        // Validar que el producto exista
         Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         // Obtener el carrito del usuario
@@ -68,7 +62,18 @@ public class CarritoServiceImpl implements CarritoService {
         }
 
         // Recalcular totales del carrito después de agregar el item
-        recalcularTotalesCarrito(carrito);
+        BigDecimal precioTotal = BigDecimal.ZERO;
+        int cantidadTotal = 0;
+
+        // Obtener todos los items del carrito
+        for (CarritoItem item : carritoItemRepository.findByCarrito_CarritoId(carrito.getCarritoId())) {
+            precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
+            cantidadTotal += item.getCantidad();
+        }
+
+        // Llamar al método actualizarTotales
+        carrito.actualizarTotales(precioTotal, cantidadTotal);
+        carritoRepository.save(carrito); // Guardamos después de actualizar totales
 
         // Mapear el item agregado a DTO
         CarritoItemDTO carritoItemDTO = new CarritoItemDTO();
@@ -83,6 +88,31 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     @Override
+    public void actualizarCantidadProducto(UUID usuarioId, UUID productoId, int cantidad) {
+        // Verificar si el producto existe en el carrito
+        CarritoItem carritoItem = carritoItemRepository.findByCarrito_Usuario_UsuarioIdAndProducto_ProductoId(usuarioId, productoId);
+        if (carritoItem != null) {
+            carritoItem.setCantidad(cantidad);  // Actualizamos la cantidad
+            carritoItemRepository.save(carritoItem);  // Guardamos la actualización
+
+            // Recalcular totales del carrito después de actualizar la cantidad
+            Carrito carrito = carritoItem.getCarrito();
+            BigDecimal precioTotal = BigDecimal.ZERO;
+            int cantidadTotal = 0;
+
+            // Obtener todos los items del carrito
+            for (CarritoItem item : carritoItemRepository.findByCarrito_CarritoId(carrito.getCarritoId())) {
+                precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
+                cantidadTotal += item.getCantidad();
+            }
+
+            // Llamar al método actualizarTotales
+            carrito.actualizarTotales(precioTotal, cantidadTotal);
+            carritoRepository.save(carrito);
+        }
+    }
+
+    @Override
     public void eliminarProductoDelCarrito(UUID usuarioId, UUID productoId) {
         // Buscar el carrito item asociado al usuario y el producto
         CarritoItem carritoItem = carritoItemRepository.findByCarrito_Usuario_UsuarioIdAndProducto_ProductoId(usuarioId, productoId);
@@ -92,22 +122,18 @@ public class CarritoServiceImpl implements CarritoService {
 
             // Recalcular totales del carrito después de eliminar el item
             Carrito carrito = carritoItem.getCarrito();
-            recalcularTotalesCarrito(carrito);  // Recalcular totales
+            BigDecimal precioTotal = BigDecimal.ZERO;
+            int cantidadTotal = 0;
+
+            // Obtener todos los items del carrito
+            for (CarritoItem item : carritoItemRepository.findByCarrito_CarritoId(carrito.getCarritoId())) {
+                precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
+                cantidadTotal += item.getCantidad();
+            }
+
+            // Llamar al método actualizarTotales
+            carrito.actualizarTotales(precioTotal, cantidadTotal);
+            carritoRepository.save(carrito); // Guardamos después de actualizar totales
         }
-    }
-
-    private void recalcularTotalesCarrito(Carrito carrito) {
-        BigDecimal precioTotal = BigDecimal.ZERO;
-        int cantidadTotal = 0;
-
-        // Obtener todos los items del carrito
-        for (CarritoItem item : carritoItemRepository.findByCarrito_CarritoId(carrito.getCarritoId())) {
-            precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
-            cantidadTotal += item.getCantidad();
-        }
-
-        // Actualizar los totales del carrito
-        carrito.actualizarTotales(precioTotal, cantidadTotal);
-        carritoRepository.save(carrito); // Guardamos después de actualizar totales
     }
 }

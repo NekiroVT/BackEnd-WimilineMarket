@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,7 +42,12 @@ public class Usuario {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    //@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
-    //    private List<Direccion> direcciones;
+    // Relación OneToMany con Direccion
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<Direccion> direcciones;
 
+    // Constructor que acepta un UUID
+    public Usuario(UUID usuarioId) {
+        this.usuarioId = usuarioId;
+    }
 }

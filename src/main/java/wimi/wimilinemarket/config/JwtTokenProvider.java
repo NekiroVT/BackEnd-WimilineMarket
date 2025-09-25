@@ -23,10 +23,11 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    // ✅ Generar accessToken usando EMAIL como subject y añadiendo claims
+    // ✅ Generar accessToken usando EMAIL y UUID como subject y añadiendo claims
     public String generateToken(Usuario usuario) {
         return Jwts.builder()
                 .setSubject(usuario.getUsuarioId().toString()) // UUID del usuario como subject
+                .claim("usuarioId", usuario.getUsuarioId().toString()) // UUID como claim adicional
                 .claim("email", usuario.getEmail())            // Claim extra: email
                 .claim("nombre", usuario.getNombre())          // opcional: nombre
                 .claim("apellido", usuario.getApellido())      // opcional: apellido
@@ -77,5 +78,15 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .get("nombre", String.class);
+    }
+
+    // ✅ Obtener usuarioId del token
+    public String getUsuarioIdFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("usuarioId", String.class); // Obtener el UUID desde el claim
     }
 }
