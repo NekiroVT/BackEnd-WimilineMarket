@@ -33,11 +33,11 @@ public class Categoria {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Relación con productos (opcional)
+
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Producto> productos;
 
-    // Imagen de la categoría
+
     @Column(name = "imagen_url", length = 255)
-    private String imagenUrl; // URL o path de la imagen de la categoría
+    private String imagenUrl;
 }

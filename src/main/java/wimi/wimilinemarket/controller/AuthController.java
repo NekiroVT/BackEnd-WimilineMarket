@@ -24,22 +24,38 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ LOGIN (email + password)
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO req) {
-        Optional<Usuario> opt = usuarioService.findByEmail(req.getEmail());
+    public ResponseEntity<?> login(@RequestBody(required = false) LoginRequestDTO req) {
+        // --- Validación de entrada vacía / nula ---
+        if (req == null || isBlank(req.getEmail()) || isBlank(req.getPassword())) {
+            String msg;
+            if (req == null || (isBlank(req.getEmail()) && isBlank(req.getPassword()))) {
+                msg = "❌ Ingresa email y contraseña";
+            } else if (isBlank(req.getEmail())) {
+                msg = "❌ Ingresa tu email";
+            } else {
+                msg = "❌ Ingresa tu contraseña";
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", msg));
+        }
+
+        // Normalizamos email (opcional)
+        String email = req.getEmail().trim().toLowerCase();
+        String password = req.getPassword();
+
+        Optional<Usuario> opt = usuarioService.findByEmail(email);
         if (opt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("success", false, "message", "❌ Credenciales incorrectas"));
         }
 
         Usuario usuario = opt.get();
-        if (!passwordEncoder.matches(req.getPassword(), usuario.getPassword())) {
+        if (!passwordEncoder.matches(password, usuario.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("success", false, "message", "❌ Credenciales incorrectas"));
         }
 
-        // 🔑 Generar JWT
         String accessToken = jwtTokenProvider.generateToken(usuario);
 
         return ResponseEntity.ok(Map.of(
@@ -56,7 +72,6 @@ public class AuthController {
         ));
     }
 
-    // ✅ REGISTER
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO req) {
         if (usuarioService.existsByEmail(req.getEmail())) {
@@ -78,5 +93,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of("success", true, "message", "✅ Usuario registrado con éxito")
         );
+    }
+
+    // helper interno
+    private static boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }

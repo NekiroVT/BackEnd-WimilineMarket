@@ -13,7 +13,12 @@ import java.io.IOException;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException {
+        // 401 cuando no estás autenticado (token faltante, inválido o EXPIRADO)
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("{\"message\":\"Token inválido o expirado\"}");
     }
 }

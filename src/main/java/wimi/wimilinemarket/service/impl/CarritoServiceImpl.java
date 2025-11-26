@@ -33,7 +33,7 @@ public class CarritoServiceImpl implements CarritoService {
         int cantidadTotal = 0;
 
         for (CarritoItem item : carrito.getCarritoItems()) {
-            if (item.getEstado()) { // Solo contar los items activos
+            if (item.getEstado()) {
                 precioTotal = precioTotal.add(item.getPrecioUnitario().multiply(new BigDecimal(item.getCantidad())));
                 cantidadTotal += item.getCantidad();
             }

@@ -33,11 +33,10 @@ public class Rol {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Relación con usuario_rol
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsuarioRol> usuarios;
 
-    // Relación con role_permiso
+
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RolPermiso> permisos;
 }

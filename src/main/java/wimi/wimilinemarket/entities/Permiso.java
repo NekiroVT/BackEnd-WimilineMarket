@@ -32,8 +32,7 @@ public class Permiso {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    // Relación con role_permiso
+    
     @OneToMany(mappedBy = "permiso", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RolPermiso> roles;
 }

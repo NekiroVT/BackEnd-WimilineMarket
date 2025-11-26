@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:oracle:thin:@31.97.84.231:1521/XEPDB1  # Cambié a freepdb1
-    username: WimilineMarket # Usa el Usuario correspondiente para tu microservicio
-    password: upeu2025#  # Cambia esto por la contraseña correcta
+    url: jdbc:oracle:thin:@31.97.84.231:1525/free  # Cambié a freepdb1
+    username: C##wimilinemarket # Usa el Usuario correspondiente para tu microservicio
+    password: wimilinemarket123  # Cambia esto por la contraseña correcta
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:

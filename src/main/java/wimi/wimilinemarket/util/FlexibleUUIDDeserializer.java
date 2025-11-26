@@ -14,7 +14,7 @@ public class FlexibleUUIDDeserializer extends JsonDeserializer<UUID> {
         String raw = p.getText().trim().toLowerCase();
 
         if (!raw.contains("-")) {
-            // Inserta guiones en el formato estándar de UUID
+
             raw = raw.replaceAll(
                     "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
                     "$1-$2-$3-$4-$5"

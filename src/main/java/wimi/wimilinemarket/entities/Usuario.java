@@ -30,6 +30,9 @@ public class Usuario {
     @Column(length = 150)
     private String email;
 
+    @Column(length = 1000)
+    private String fotoUrl;
+
     @Column(length = 255)
     private String password;
 
@@ -42,11 +45,15 @@ public class Usuario {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Relación OneToMany con Direccion
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    // RELACIÓN: 1 Usuario -> N Direcciones
+    @OneToMany(
+            mappedBy = "usuario",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Direccion> direcciones;
 
-    // Constructor que acepta un UUID
     public Usuario(UUID usuarioId) {
         this.usuarioId = usuarioId;
     }

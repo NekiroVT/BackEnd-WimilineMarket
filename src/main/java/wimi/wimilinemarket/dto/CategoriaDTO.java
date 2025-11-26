@@ -14,19 +14,19 @@ public class CategoriaDTO {
     private Boolean activa;
     private LocalDateTime createdAt;
 
-    // Nuevo campo para la imagen
-    private String imagenUrl; // URL de la imagen de la categoría
 
-    // Constructor vacío
+    private String imagenUrl;
+
+
     public CategoriaDTO() {}
 
-    // Constructor con todos los campos
+
     public CategoriaDTO(UUID categoriaId, String nombre, String descripcion, Boolean activa, LocalDateTime createdAt, String imagenUrl) {
         this.categoriaId = categoriaId;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activa = activa;
         this.createdAt = createdAt;
-        this.imagenUrl = imagenUrl; // Asignar la URL de la imagen
+        this.imagenUrl = imagenUrl;
     }
 }

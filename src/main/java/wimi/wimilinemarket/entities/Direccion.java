@@ -1,44 +1,42 @@
-    package wimi.wimilinemarket.entities;
-    import jakarta.persistence.*;
-    import lombok.Data;
-    import lombok.NoArgsConstructor;
-    import lombok.AllArgsConstructor;
+package wimi.wimilinemarket.entities;
 
-    import java.util.UUID;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-    @Entity
-    @Table(name = "Direccion")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class Direccion {
+import java.util.UUID;
 
-        @Id
-        @Column(name = "direccion_id", columnDefinition = "RAW(16)")
-        private UUID direccionId;
+@Entity
+@Table(name = "Direccion")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Direccion {
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "usuario_id", referencedColumnName = "usuario_id")
-        private Usuario usuario;
+    @Id
+    @Column(name = "direccion_id", columnDefinition = "RAW(16)")
+    private UUID direccionId;
 
-        @Column(name = "direccion_texto", length = 255)
-        private String direccionTexto;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "usuario_id")
+    private Usuario usuario;
 
-        @Column(length = 255)
-        private String referencia;
+    @Column(name = "direccion_texto", length = 255)
+    private String direccionTexto;
 
-        @Column(length = 100)
-        private String destinatario;
+    @Column(length = 255)
+    private String referencia;
 
-        @Column(length = 100)
-        private String distrito;
+    @Column(length = 100)
+    private String destinatario;
 
-        @Column(length = 100)
-        private String ciudad;
+    @Column(length = 100)
+    private String distrito;
 
-        @Column(length = 10)
-        private String codigo_postal;
+    @Column(length = 100)
+    private String ciudad;
 
-
-    
-    }
+    @Column(length = 10)
+    private String codigo_postal;
+}

@@ -19,10 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * En Spring Security el parámetro se llama "username",
-     * pero aquí lo usamos como EMAIL (login por email).
-     */
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByEmail(email)
@@ -30,9 +27,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         boolean enabled = usuario.getActivo() == null ? true : usuario.getActivo();
 
-        return User.withUsername(usuario.getEmail())      // username = email
-                .password(usuario.getPassword())          // hash BCrypt u otro
-                .authorities(Collections.emptyList())     // sin roles por ahora
+        return User.withUsername(usuario.getEmail())
+                .password(usuario.getPassword())
+                .authorities(Collections.emptyList())
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)

@@ -32,12 +32,10 @@ public class Pedido {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    // FK → Usuario.usuario_id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    // FK → Direccion.direccion_id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "direccion_id")
     private Direccion direccion;
@@ -46,7 +44,5 @@ public class Pedido {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Si luego quieres enlazar con pedido_item o Entrega:
-    // @OneToMany(mappedBy = "Pedido")
-    // private List<PedidoItem> items;
+
 }

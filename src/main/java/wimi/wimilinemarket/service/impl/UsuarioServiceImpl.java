@@ -1,12 +1,15 @@
 package wimi.wimilinemarket.service.impl;
 
 import wimi.wimilinemarket.dto.UsuarioDTO;
+import wimi.wimilinemarket.dto.UsuarioProfileDTO;
 import wimi.wimilinemarket.entities.Usuario;
 import wimi.wimilinemarket.repository.UsuarioRepository;
 import wimi.wimilinemarket.service.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,10 +28,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO createUsuario(UsuarioDTO usuarioDTO) {
-        // Encriptar la contraseña
         String encodedPassword = passwordEncoder.encode(usuarioDTO.getPassword());
 
-        // Construir la entidad Usuario
         Usuario usuario = new Usuario();
         usuario.setUsuarioId(UUID.randomUUID());
         usuario.setNombre(usuarioDTO.getNombre());
@@ -38,9 +39,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setActivo(true);
         usuario.setPassword(encodedPassword);
 
-        // Guardar en la BD
         Usuario saved = usuarioRepository.save(usuario);
-
         return mapToDTO(saved);
     }
 
@@ -66,18 +65,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO updateUsuario(UUID id, UsuarioDTO usuarioDTO) {
-        Optional<Usuario> opt = usuarioRepository.findById(id);
-        if (opt.isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado");
-        }
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Usuario usuario = opt.get();
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setApellido(usuarioDTO.getApellido());
         usuario.setTelefono(usuarioDTO.getTelefono());
         usuario.setActivo(usuarioDTO.getActivo());
 
-        // Actualizar contraseña si se envía
         if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isBlank()) {
             usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
         }
@@ -86,7 +81,51 @@ public class UsuarioServiceImpl implements UsuarioService {
         return mapToDTO(updated);
     }
 
-    // 🔄 Mapea la entidad Usuario a UsuarioDTO (sin password para no exponerla)
+    // ==================== PERFIL ====================
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioProfileDTO getUserProfile(UUID usuarioId) {
+        Usuario u = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        String fullName = buildFullName(u.getNombre(), u.getApellido());
+
+        // Foto: si en BD no hay (null/blank), devolvemos null
+        String raw = u.getFotoUrl();
+        String photoUrl = (raw != null && !raw.trim().isEmpty()) ? raw.trim() : null;
+
+        String email = u.getEmail();
+
+        return UsuarioProfileDTO.builder()
+                .fullName(fullName)
+                .photoUrl(photoUrl)  // puede ser null
+                .email(email)
+                .build();
+    }
+
+    @Override
+    public void deleteUsuario(UUID id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Gracias a cascade = CascadeType.ALL y orphanRemoval = true en Usuario.direcciones
+        // al eliminar el usuario se eliminarán automáticamente todas sus direcciones.
+        usuarioRepository.delete(usuario);
+    }
+
+
+    // ==================== HELPERS ====================
+
+    private String buildFullName(String nombre, String apellido) {
+        String n = nombre != null ? nombre.trim() : "";
+        String a = apellido != null ? apellido.trim() : "";
+        String out = (n + " " + a).trim();
+        return out.isEmpty() ? null : out;
+    }
+
+    // ==================== MAPPER ====================
+
     private UsuarioDTO mapToDTO(Usuario usuario) {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setUsuarioId(usuario.getUsuarioId());

@@ -1,4 +1,4 @@
-// CarritoItemService.java - Servicio responsable de manipular los productos en el carrito
+
 package wimi.wimilinemarket.service;
 
 import wimi.wimilinemarket.dto.CarritoItemDTO;

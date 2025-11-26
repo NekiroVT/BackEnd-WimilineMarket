@@ -27,7 +27,7 @@ public class DireccionServiceImpl implements DireccionService {
     public DireccionDTO crearDireccion(DireccionDTO direccionDTO) {
         Direccion direccion = new Direccion();
         direccion.setDireccionId(UUID.randomUUID());
-        direccion.setUsuario(new Usuario(direccionDTO.getUsuarioId())); // Asignamos el usuario relacionado
+        direccion.setUsuario(new Usuario(direccionDTO.getUsuarioId()));
         direccion.setDireccionTexto(direccionDTO.getDireccionTexto());
         direccion.setReferencia(direccionDTO.getReferencia());
         direccion.setDestinatario(direccionDTO.getDestinatario());
@@ -47,7 +47,7 @@ public class DireccionServiceImpl implements DireccionService {
 
     @Override
     public List<DireccionDTO> obtenerDireccionesPorUsuario(UUID usuarioId) {
-        List<Direccion> direcciones = direccionRepository.findAll(); // Aquí puedes agregar el filtro para usuario_id
+        List<Direccion> direcciones = direccionRepository.findAll();
         return direcciones.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 

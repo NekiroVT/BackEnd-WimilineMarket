@@ -26,7 +26,6 @@ public class HorarioEntrega {
     @Column(name = "fecha_entrega")
     private LocalDateTime fechaEntrega;
 
-    // FK → Pedido.pedido_id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id")
     private Pedido pedido;

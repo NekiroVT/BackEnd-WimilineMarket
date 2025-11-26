@@ -38,42 +38,42 @@ public class CarritoItemServiceImpl implements CarritoItemService {
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // Obtener o crear el carrito del usuario
+
         Carrito carrito = carritoRepository.findByUsuario_UsuarioIdAndEstadoTrue(usuarioId);
         if (carrito == null) {
             carrito = new Carrito();
-            carrito.setUsuario(new Usuario(usuarioId)); // Asociamos el carrito al usuario
-            carrito.setEstado(true);  // Estado activo por defecto
-            carritoRepository.save(carrito);  // Guardar el carrito
+            carrito.setUsuario(new Usuario(usuarioId));
+            carrito.setEstado(true);
+            carritoRepository.save(carrito);
         }
 
-        // Verificar si el producto ya existe en el carrito
+
         CarritoItem carritoItem = carritoItemRepository.findByCarrito_Usuario_UsuarioIdAndProducto_ProductoId(usuarioId, productoId);
         if (carritoItem == null) {
-            // Agregar producto al carrito
+
             carritoItem = new CarritoItem();
             carritoItem.setCarrito(carrito);
             carritoItem.setProducto(producto);
             carritoItem.setCantidad(cantidad);
             carritoItem.setPrecioUnitario(producto.getPrecio());
-            carritoItem.setEstado(true); // El item está activo
+            carritoItem.setEstado(true);
             carritoItemRepository.save(carritoItem);
         } else {
-            // Si ya existe en el carrito, actualizar cantidad
+
             if (producto.getStock() < cantidad) {
-                carritoItem.setCantidad(producto.getStock()); // Limitar al stock disponible
-                carritoItem.setEstado(false);  // Marcar como agotado
+                carritoItem.setCantidad(producto.getStock());
+                carritoItem.setEstado(false);
             } else {
                 carritoItem.setCantidad(cantidad);
-                carritoItem.setEstado(true); // El item sigue activo
+                carritoItem.setEstado(true);
             }
             carritoItemRepository.save(carritoItem);
         }
 
-        // Recalcular totales del carrito
+
         carritoService.recalcularTotalesCarrito(carrito.getCarritoId());
 
-        // Mapear a DTO
+
         CarritoItemDTO carritoItemDTO = new CarritoItemDTO();
         carritoItemDTO.setCarritoItemId(carritoItem.getCarritoItemId());
         carritoItemDTO.setCarritoId(carrito.getCarritoId());
@@ -87,11 +87,11 @@ public class CarritoItemServiceImpl implements CarritoItemService {
 
     @Override
     public void actualizarCantidadProducto(UUID usuarioId, UUID productoId, int cantidad) {
-        // Lógica de actualización de cantidad de productos
+
     }
 
     @Override
     public void eliminarProductoDelCarrito(UUID usuarioId, UUID productoId) {
-        // Lógica de eliminación de productos del carrito
+
     }
 }

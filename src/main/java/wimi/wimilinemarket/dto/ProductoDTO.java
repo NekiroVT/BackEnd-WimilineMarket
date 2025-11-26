@@ -1,16 +1,21 @@
 package wimi.wimilinemarket.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import wimi.wimilinemarket.util.FlexibleUUIDDeserializer;
 
 @Data
 public class ProductoDTO {
 
     private UUID productoId;
-    private UUID categoriaId; // Foreign Key a Categoria
+
+    @JsonDeserialize(using = FlexibleUUIDDeserializer.class)  // Aplicamos el deserializador personalizado aquí
+    private UUID categoriaId;
+
     private String nombre;
     private String descripcion;
     private String detalles;
@@ -20,10 +25,8 @@ public class ProductoDTO {
     private Boolean activo;
     private LocalDateTime createdAt;
 
-    // Constructor vacío
     public ProductoDTO() {}
 
-    // Constructor con todos los campos
     public ProductoDTO(UUID productoId, UUID categoriaId, String nombre, String descripcion, String detalles,
                        BigDecimal precio, Integer stock, String imagenUrl, Boolean activo, LocalDateTime createdAt) {
         this.productoId = productoId;

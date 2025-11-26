@@ -27,9 +27,9 @@ public class CategoriaServiceImpl implements CategoriaService {
         categoria.setCategoriaId(UUID.randomUUID());
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
-        categoria.setActiva(true); // default activo
+        categoria.setActiva(true);
         categoria.setCreatedAt(java.time.LocalDateTime.now());
-        categoria.setImagenUrl(categoriaDTO.getImagenUrl()); // Agregar imagen
+        categoria.setImagenUrl(categoriaDTO.getImagenUrl());
 
         Categoria savedCategoria = categoriaRepository.save(categoria);
         return mapToDTO(savedCategoria);
@@ -57,7 +57,7 @@ public class CategoriaServiceImpl implements CategoriaService {
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
         categoria.setActiva(categoriaDTO.getActiva());
-        categoria.setImagenUrl(categoriaDTO.getImagenUrl()); // Actualizar imagen
+        categoria.setImagenUrl(categoriaDTO.getImagenUrl());
 
         Categoria updatedCategoria = categoriaRepository.save(categoria);
         return mapToDTO(updatedCategoria);
@@ -75,7 +75,7 @@ public class CategoriaServiceImpl implements CategoriaService {
                 categoria.getDescripcion(),
                 categoria.getActiva(),
                 categoria.getCreatedAt(),
-                categoria.getImagenUrl() // Incluir imagenUrl en el DTO
+                categoria.getImagenUrl()
         );
     }
 }

@@ -12,10 +12,10 @@ import java.util.UUID;
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, UUID> {
 
-    // por categoria
+
     List<Producto> findAllByCategoria_CategoriaId(UUID categoriaId);
 
-    // ejemplo de "nuevos desde"
+
     @Query("SELECT p FROM Producto p WHERE p.createdAt >= :fechaLimite")
     List<Producto> findProductosNuevosDesde(LocalDateTime fechaLimite);
 }

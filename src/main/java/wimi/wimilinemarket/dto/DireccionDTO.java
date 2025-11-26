@@ -7,7 +7,7 @@ import java.util.UUID;
 public class DireccionDTO {
 
     private UUID direccionId;
-    private UUID usuarioId; // Usuario relacionado
+    private UUID usuarioId;
     private String direccionTexto;
     private String referencia;
     private String destinatario;

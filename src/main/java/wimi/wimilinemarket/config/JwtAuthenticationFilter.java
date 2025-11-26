@@ -5,8 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,12 +17,9 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailsServiceImpl userDetailsService; // tu servicio
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
-                                   UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -31,7 +28,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Rutas públicas (login/registro)
         String path = request.getRequestURI();
         if ("/api/auth/login".equals(path) || "/api/auth/register".equals(path)) {
             filterChain.doFilter(request, response);
@@ -43,20 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtTokenProvider.validateToken(token)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // Extraemos EMAIL del token (según tu JwtTokenProvider)
-            String email = jwtTokenProvider.getEmailFromToken(token);
+            // ✅ Obtener UUID desde el JWT (claim "sub")
+            String userId = jwtTokenProvider.getUserIdFromToken(token);
 
-            // Cargar detalles del usuario
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
-            // Crear autenticación con authorities
+            // ✅ Crear Authentication directo con UUID como principal
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
+                            userId, null, null); // SIN AUTHORITIES POR AHORA
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // Poner en contexto
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

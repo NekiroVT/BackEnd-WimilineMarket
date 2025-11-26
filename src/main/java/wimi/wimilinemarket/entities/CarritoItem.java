@@ -22,29 +22,29 @@ public class CarritoItem {
     private UUID carritoItemId;
 
     @Column(name = "cantidad")
-    private Integer cantidad; // Cantidad del producto en el carrito
+    private Integer cantidad;
 
     @CreationTimestamp
     @Column(name = "agregado_at")
-    private LocalDateTime agregadoAt; // Fecha y hora de adición al carrito
+    private LocalDateTime agregadoAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "carrito_id") // FK hacia Carrito
+    @JoinColumn(name = "carrito_id")
     private Carrito carrito;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id") // FK hacia Producto
+    @JoinColumn(name = "producto_id")
     private Producto producto;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt; // Fecha de creación del item en el carrito
+    private LocalDateTime createdAt;
 
     @Column(name = "estado", nullable = false)
-    private Boolean estado; // Estado del item en el carrito (activo/inactivo)
+    private Boolean estado;
 
     @Column(name = "precio_unitario", precision = 10, scale = 2)
-    private BigDecimal precioUnitario; // Precio unitario del producto en el carrito
+    private BigDecimal precioUnitario;
 
     // Método setter para precioUnitario
     public void setPrecioUnitario(BigDecimal precioUnitario) {

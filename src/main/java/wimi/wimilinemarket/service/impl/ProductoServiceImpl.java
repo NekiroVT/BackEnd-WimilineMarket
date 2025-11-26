@@ -30,7 +30,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public ProductoDTO createProducto(ProductoDTO productoDTO) {
-        // ✅ Categoría obligatoria
+
         if (productoDTO.getCategoriaId() == null) {
             throw new RuntimeException("La categoría es obligatoria");
         }
@@ -39,7 +39,7 @@ public class ProductoServiceImpl implements ProductoService {
 
         Producto producto = new Producto();
         producto.setProductoId(UUID.randomUUID());
-        producto.setCategoria(categoria); // <-- siempre se setea
+        producto.setCategoria(categoria);
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
         producto.setDetalles(productoDTO.getDetalles());
@@ -75,13 +75,13 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // ✅ Categoría obligatoria también en update
+
         if (productoDTO.getCategoriaId() == null) {
             throw new RuntimeException("La categoría es obligatoria");
         }
         Categoria categoria = categoriaRepository.findById(productoDTO.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
-        producto.setCategoria(categoria); // <-- siempre se setea
+        producto.setCategoria(categoria);
 
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
